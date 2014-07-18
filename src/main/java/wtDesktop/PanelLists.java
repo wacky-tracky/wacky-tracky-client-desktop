@@ -1,100 +1,97 @@
 package wtDesktop;
 
-import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Component;
+import java.awt.ComponentOrientation;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.util.Vector;
 
-import javax.swing.BorderFactory;
-import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
-import javax.swing.ListCellRenderer;
-import javax.swing.ListModel;
-import javax.swing.event.ListDataListener;
+import javax.swing.JScrollPane;
+import javax.swing.ScrollPaneConstants;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
-import wackyTracky.clientbindings.java.api.Session;
+import wackyTracky.clientbindings.java.model.DataStore;
 import wackyTracky.clientbindings.java.model.ItemList;
 import wackyTracky.clientbindings.java.model.ListOfLists;
 
-public class PanelLists extends JPanel {
-	private class ItemListCellRenderer implements ListCellRenderer<ItemList> {
+public class PanelLists extends JPanel implements ListOfLists.Listener {
 
-		@Override
-		public Component getListCellRendererComponent(JList<? extends ItemList> list, ItemList value, int index, boolean isSelected, boolean cellHasFocus) {
-			JLabel l = new JLabel(value.title + " (" + value.id + ")");
-			l.setBackground(new Color(100, 200, 200));
-			l.setForeground(Color.BLACK);
-			l.setOpaque(true);
-			l.setBorder(BorderFactory.createEmptyBorder(6, 6, 6, 6));
-
-			if (isSelected) {
-				l.setText(">> " + l.getText());
-				l.setBackground(Color.BLACK);
-				l.setForeground(Color.WHITE);
-			}
-
-			return l;
-		}
-
-	}
-
-	private class ItemListModel implements ListModel<ItemList> {
-
-		@Override
-		public void addListDataListener(ListDataListener arg0) {
-
-		}
+	private class ItemListModel extends AbstractWtListModel<ItemList> {
 
 		@Override
 		public ItemList getElementAt(int arg0) {
-			return PanelLists.this.lol.getLists().get(arg0);
+			return DataStore.instance.listOfLists.getLists().get(arg0);
 		}
 
 		@Override
 		public int getSize() {
-			return PanelLists.this.lol.getLists().size();
+			return DataStore.instance.listOfLists.getLists().size();
 		}
 
-		@Override
-		public void removeListDataListener(ListDataListener arg0) {
-			// TODO Auto-generated method stub
-
-		}
 	}
 
 	private class ItemListSelectionListener implements ListSelectionListener {
 
 		@Override
 		public void valueChanged(ListSelectionEvent arg0) {
+			if (arg0.getValueIsAdjusting()) {
+				return;
+			}
+
 			ItemList list = PanelLists.this.getSelectedList();
 
 			if (list != null) {
 				WindowMain.instance.panelItems.setList(list);
-			}
 
+				for (Listener l : PanelLists.this.listeners) {
+					l.listClicked(list);
+				}
+			}
 		}
 
 	}
 
+	public interface Listener {
+		void listClicked(ItemList newList);
+	}
+
+	public final Vector<Listener> listeners = new Vector<Listener>();
+
 	private final JList<ItemList> itemList = new JList<ItemList>();
 
-	private ListOfLists lol;
+	private final ItemListModel mdl = new ItemListModel();
 
-	public PanelLists(Session session) {
-		this.itemList.setModel(new ItemListModel());
-		this.itemList.setCellRenderer(new ItemListCellRenderer());
+	public PanelLists() {
+		this.itemList.setModel(this.mdl);
+		this.itemList.setCellRenderer(new ComponentListSidebarButton());
 		this.itemList.addListSelectionListener(new ItemListSelectionListener());
 
-		try {
-			this.lol = session.getListLists();
-			this.itemList.repaint();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+		DataStore.instance.listOfLists.listeners.add(this);
 
-		this.add(this.itemList, BorderLayout.CENTER);
+		this.setLayout(new GridBagLayout());
+		GridBagConstraints gbc = new GridBagConstraints();
+		gbc.fill = GridBagConstraints.BOTH;
+		gbc.gridx = 0;
+		gbc.gridy = 0;
+		gbc.weightx = 1;
+		gbc.weighty = 1;
+		gbc.anchor = GridBagConstraints.NORTH;
+
+		this.setBackground(Color.WHITE);
+		JScrollPane scl = new JScrollPane(this.itemList);
+		scl.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
+		scl.setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
+		this.add(scl, gbc);
+	}
+
+	@Override
+	public void fireNewList() {
+		this.mdl.fireChanged();
+		this.itemList.invalidate();
+		this.itemList.doLayout();
 	}
 
 	ItemList getSelectedList() {

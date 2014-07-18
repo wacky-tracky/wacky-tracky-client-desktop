@@ -8,43 +8,68 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JSplitPane;
 
-import wackyTracky.clientbindings.java.api.Session;
+import wackyTracky.clientbindings.java.WtConnMonitor;
 
 public class WindowMain extends JFrame {
 	public static WindowMain instance = new WindowMain();
 	public PanelItems panelItems;
+	public PanelLists panelLists;
+
+	private final ComponentStatusBar compStatusBar = new ComponentStatusBar(this);
 
 	private WindowMain() {
-		this.setBounds(100, 100, 640, 480);
+		this.setBounds(100, 100, 960, 480);
 		this.setLocationRelativeTo(null);
 		this.setTitle("wacky-tracky");
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		this.setIconImage(Main.getIcon());
 
-		Session session = new Session();
-		try {
-			session.reqAuthenticate("unittest", "unittest").submit().response().saveCookiesInSession();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+		this.setJMenuBar(new MainMenuBar(this));
 
 		GridBagConstraints gbc = new GridBagConstraints();
 		gbc.fill = GridBagConstraints.BOTH;
-		gbc.weightx = 0;
+		gbc.weightx = 1;
 		gbc.weighty = 1;
+		gbc.gridx = 0;
+		gbc.gridy = 0;
 
 		JPanel panelSidebar = new JPanel();
 		panelSidebar.setLayout(new GridBagLayout());
-		panelSidebar.add(new PanelLogo(), gbc);
 
-		gbc.gridx++;
-		gbc.weightx = 1;
-		panelSidebar.add((new PanelLists(session)), gbc);
+		gbc.weighty = 0;
+		panelSidebar.add(new ComponentLogo(), gbc);
 
-		this.panelItems = new PanelItems(session);
+		gbc.gridy++;
+		gbc.weighty = 1;
+		this.panelLists = new PanelLists();
+		panelSidebar.add(this.panelLists, gbc);
 
-		JSplitPane sp = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, panelSidebar, this.panelItems);
+		gbc.gridy++;
+		gbc.weighty = 0;
+		ComponentGlobalControls gloControls = new ComponentGlobalControls();
+		panelSidebar.add(gloControls, gbc);
+
+		this.panelItems = new PanelItems();
+		this.panelLists.listeners.add(this.panelItems);
+
+		JSplitPane sp = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
+		sp.setLeftComponent(panelSidebar);
+		sp.setRightComponent(this.panelItems);
 		sp.setDividerLocation(this.getWidth() / 4);
 		this.add(sp, BorderLayout.CENTER);
 
+		this.add(this.compStatusBar, BorderLayout.SOUTH);
+	}
+
+	public void onLoggedIn() {
+		this.setVisible(true);
+
+		Actioner.refreshLists();
+
+		if (WtConnMonitor.isOffline()) {
+			this.setTitle("wacky-tracky - <offline>");
+		} else {
+			this.setTitle("wacky-tracky - " + Main.username);
+		}
 	}
 }
