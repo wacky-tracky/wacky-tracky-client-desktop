@@ -10,7 +10,10 @@ import javax.imageio.ImageIO;
 import javax.swing.UIManager;
 
 import jwrCommonsJava.JarUtil;
+import wackyTracky.clientbindings.java.WtConnMonitor;
+import wackyTracky.clientbindings.java.WtResponse;
 import wackyTracky.clientbindings.java.api.Session;
+import wackyTracky.clientbindings.java.api.SyncManager;
 import wackyTracky.clientbindings.java.model.DataStore;
 
 import com.beust.jcommander.JCommander;
@@ -19,17 +22,30 @@ class Main {
 	public static Session session = new Session();
 	public static String username;
 
+	public static final DataStore datastore = DataStore.load();
+
 	static {
 		try {
 			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+
+		WtResponse.userAgent = "wtDesktop " + Main.getVersion();
+
+		syncManager = new SyncManager(datastore, session);
 	}
 
 	private static Image icon;
+	protected static SyncManager syncManager;
+
+	/**
+	 * This is obviously stupid, but we need the password to reauthenticate.
+	 */
+	public static String password;
 
 	public static void exit() {
+		Main.datastore.save();
 		System.exit(0);
 	}
 
@@ -38,7 +54,7 @@ class Main {
 
 		if (Main.icon == null) {
 			try {
-				if (JarUtil.isInAJar()) {
+				if (JarUtil.isInAJar(Main.class)) {
 					Main.icon = ImageIO.read(JarUtil.getResource(path));
 				} else {
 					File f = new File("src/main/resources/" + path);
@@ -53,7 +69,7 @@ class Main {
 	}
 
 	public static String getVersion() {
-		if (JarUtil.isInAJar()) {
+		if (JarUtil.isInAJar(Main.class)) {
 			return Main.class.getPackage().getImplementationVersion();
 		} else {
 			return "nojar";
@@ -66,6 +82,10 @@ class Main {
 
 		WindowLogin wndLogin = new WindowLogin();
 
+		if (Args.offline) {
+			WtConnMonitor.goOffline();
+		}
+
 		if (Args.hasUsernameAndPassword()) {
 			wndLogin.clickLogin();
 		} else {
@@ -75,7 +95,7 @@ class Main {
 
 	public void startGroovyUi() throws Exception {
 		Binding binding = new Binding();
-		binding.setVariable("dataStore", DataStore.instance);
+		binding.setVariable("dataStore", Main.datastore);
 
 		ClassLoader parent = Main.class.getClassLoader();
 		GroovyClassLoader loader = new GroovyClassLoader(parent);
@@ -89,7 +109,7 @@ class Main {
 		}
 
 		System.out.println(clazz);
-		Object o = clazz.newInstance();
+		clazz.newInstance();
 
 		loader.close();
 

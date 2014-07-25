@@ -7,12 +7,25 @@ import java.awt.event.ActionListener;
 import javax.swing.JButton;
 import javax.swing.JPanel;
 
+import wackyTracky.clientbindings.java.api.SyncManager;
+
 public class ComponentGlobalControls extends JPanel {
-	private final JButton btnNewList = new JButton("New List");
+	private final JButton btnSync = new JButton("sync");
+	private final JButton btnNewList = new JButton("n");
 	private final JButton btnRefresh = new JButton("*");
+	private final JButton btnDel = new JButton("rm");
 
 	public ComponentGlobalControls() {
 		this.setLayout(new FlowLayout());
+
+		this.btnDel.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				Actioner.deleteSelectedList();
+			}
+		});
+
+		this.add(this.btnDel);
 
 		this.btnRefresh.addActionListener(new ActionListener() {
 			@Override
@@ -30,6 +43,16 @@ public class ComponentGlobalControls extends JPanel {
 			}
 		});
 		this.add(this.btnNewList);
+
+		this.btnSync.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				new SyncManager(Main.datastore, Main.session).syncNow();
+			}
+		});
+
+		this.add(this.btnSync);
 	}
 
 }

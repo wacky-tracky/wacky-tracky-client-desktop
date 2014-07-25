@@ -27,14 +27,14 @@
   	<version>2.3.4</version>
   </dependency>
   	<dependency>
-  		<groupId>wacky-tracky-clientbindings-java</groupId>
-  		<artifactId>wacky-tracky-clientbindings-java</artifactId>
-  		<version>0.0.1-SNAPSHOT</version>
-  	</dependency>
-  	<dependency>
   		<groupId>jwrCommonsJava</groupId>
   		<artifactId>jwrCommonsJava</artifactId>
   		<version>0.0.13-SNAPSHOT</version>
+  	</dependency>
+  	<dependency>
+  		<groupId>wacky-tracky-clientbindings-java</groupId>
+  		<artifactId>wacky-tracky-clientbindings-java</artifactId>
+  		<version>0.0.1-SNAPSHOT</version>
   	</dependency>
   </dependencies>
 </project>

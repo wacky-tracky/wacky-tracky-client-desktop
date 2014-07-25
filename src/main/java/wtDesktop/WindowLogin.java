@@ -6,10 +6,13 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 
 import wackyTracky.clientbindings.java.WtConnMonitor;
@@ -19,7 +22,7 @@ import wackyTracky.clientbindings.java.WtRequest.ConnException;
 
 public class WindowLogin extends JFrame {
 	public JTextField txtUsername = new JTextField();
-	public JTextField txtPassword = new JTextField();
+	public JPasswordField txtPassword = new JPasswordField();
 	public JButton btnLogin = new JButton("Login");
 
 	public WindowLogin() {
@@ -35,25 +38,37 @@ public class WindowLogin extends JFrame {
 
 		if (Args.username != null) {
 			this.txtUsername.setText(Args.username);
+			Main.username = Args.username;
 		}
 
 		if (Args.password != null) {
 			this.txtPassword.setText(Args.password);
+			Main.password = Args.password;
 		}
 
+		this.txtPassword.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyReleased(KeyEvent e) {
+				if (e.getKeyCode() == KeyEvent.VK_ENTER) {
+					WindowLogin.this.clickLogin();
+				} else {
+					super.keyReleased(e);
+				}
+			}
+		});
 	}
 
 	public void clickLogin() {
 		try {
 			this.btnLogin.setEnabled(false);
 
-			WtRequest req = Main.session.reqAuthenticate(this.txtUsername.getText(), this.txtPassword.getText());
+			WtRequest req = Main.session.reqAuthenticate(this.txtUsername.getText(), new String(this.txtPassword.getPassword()));
 			req.response().assertStatusOkAndJson();
 			req.response().saveCookiesInSession();
 
 			Main.username = req.response().getContentJsonObject().get("username").toString();
 		} catch (ConnException e) {
-			if (e.isOneOf(ConnError.UNKNOWN_HOST_DNS)) {
+			if (e.isOneOf(ConnError.UNKNOWN_HOST_DNS, ConnError.REQ_WHILE_OFFLINE)) {
 				WtConnMonitor.goOffline();
 			} else {
 				this.resetLogin();

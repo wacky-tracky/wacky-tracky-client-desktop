@@ -8,5 +8,7 @@ public class Stylesheet {
 	public static final Color LIST_SELECTED_FG = Color.BLACK;
 	public static final Color ITEM_INPUT_BORDER = new Color(12, 111, 238);
 	public static final Color LIST_UNSELECTED_BG = Color.WHITE;
+	public static final Color LIST_UNSELECTED_PENDING_BG = Color.yellow;
+	public static final Color ITEM_UNSELECTED_PENDING_BG = Color.yellow;
 
 }

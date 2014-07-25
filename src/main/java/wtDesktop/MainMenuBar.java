@@ -8,7 +8,6 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 
 import wackyTracky.clientbindings.java.WtConnMonitor;
-import wackyTracky.clientbindings.java.model.DataStore;
 
 public class MainMenuBar extends JMenuBar {
 	private final JMenuItem mniPrintln = new JMenuItem("println");
@@ -17,16 +16,15 @@ public class MainMenuBar extends JMenuBar {
 	private final JMenuItem mniExit = new JMenuItem("Exit");
 	private final JMenuItem mniRefreshLists = new JMenuItem("Refresh lists");
 	private final JMenu mnuMain = new JMenu("Debug");
-	private final WindowMain wndMain;
 
-	public MainMenuBar(WindowMain wndMain) {
-		this.wndMain = wndMain;
+	private final JMenuItem mniSave = new JMenuItem("Save");
 
+	public MainMenuBar() {
 		this.mniPrintln.addActionListener(new ActionListener() {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				DataStore.instance.println();
+				Main.datastore.println();
 			}
 		});
 
@@ -47,7 +45,7 @@ public class MainMenuBar extends JMenuBar {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				WtConnMonitor.toggleForceOffline();
+				Actioner.toggleForceOffline();
 
 				MainMenuBar.this.updateOfflineStatus();
 			}
@@ -74,6 +72,16 @@ public class MainMenuBar extends JMenuBar {
 				Main.exit();
 			}
 		});
+
+		this.mniSave.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				Main.datastore.save();
+			}
+		});
+
+		this.mnuMain.add(this.mniSave);
 
 		this.mnuMain.add(this.mniExit);
 

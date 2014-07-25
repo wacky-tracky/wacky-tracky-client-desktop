@@ -31,9 +31,9 @@ public class ComponentStatusBar extends JPanel {
 		WtConnMonitor.listeners.add(new Listener() {
 
 			@Override
-			public void onError(ConnError err) {
-				ComponentStatusBar.this.lblLastRequestStatus.setBackground(Color.RED);
-				ComponentStatusBar.this.lblLastRequestStatus.setText("Err: " + err);
+			public void onError(ConnError err, int reqno) {
+				ComponentStatusBar.this.lblLastRequestStatus.setBackground(Color.PINK);
+				ComponentStatusBar.this.lblLastRequestStatus.setText("req " + reqno + " err: " + err);
 				ComponentStatusBar.this.lblLastRequestStatus.setToolTipText(err.description);
 			}
 

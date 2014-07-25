@@ -2,6 +2,8 @@ package wtDesktop;
 
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 
 import javax.swing.AbstractListModel;
 import javax.swing.BorderFactory;
@@ -20,7 +22,8 @@ public class PanelItems extends JList<String> implements Listener, PanelLists.Li
 
 	private class ItemListModel extends AbstractListModel<Item> {
 
-		public ItemListModel() {}
+		public ItemListModel() {
+		}
 
 		public void fireChanged() {
 			this.fireContentsChanged(this, 0, this.getSize());
@@ -71,6 +74,14 @@ public class PanelItems extends JList<String> implements Listener, PanelLists.Li
 	public PanelItems() {
 		this.jlist.setModel(this.mdl);
 		this.jlist.addListSelectionListener(new ItemSelectionListener());
+		this.jlist.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyReleased(KeyEvent e) {
+				if (e.getKeyCode() == KeyEvent.VK_DELETE) {
+					Actioner.deleteSelectedItem();
+				}
+			}
+		});
 		this.jlist.setCellRenderer(new ComponentItemCellRenderer());
 
 		this.setLayout(new GridBagLayout());
@@ -98,6 +109,10 @@ public class PanelItems extends JList<String> implements Listener, PanelLists.Li
 		this.setBackground(this.panListOptions.getBackground());
 	}
 
+	public Item getselectedItem() {
+		return this.jlist.getModel().getElementAt(this.jlist.getSelectedIndex());
+	}
+
 	@Override
 	public void listClicked(ItemList list) {
 		this.panListOptions.setList(list);
@@ -105,13 +120,23 @@ public class PanelItems extends JList<String> implements Listener, PanelLists.Li
 
 	@Override
 	public void onItemAdded(Item i) {
+		this.refresh();
+	}
+
+	@Override
+	public void onItemRemoved(Item i) {
+		this.refresh();
+	}
+
+	@Override
+	public void onListChanged(ItemList list) {
+	}
+
+	public void refresh() {
 		this.jlist.repaint();
 
 		this.mdl.fireChanged();
 	}
-
-	@Override
-	public void onListChanged(ItemList list) {}
 
 	public void setList(ItemList list) {
 		this.itemInputter.setItemList(list);
@@ -122,7 +147,6 @@ public class PanelItems extends JList<String> implements Listener, PanelLists.Li
 		try {
 			Main.session.reqListItems(list);
 		} catch (Exception e) {
-			e.printStackTrace();
 		}
 
 		this.itemList.listeners.add(this);

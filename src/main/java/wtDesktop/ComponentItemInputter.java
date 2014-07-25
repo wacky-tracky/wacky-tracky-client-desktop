@@ -10,6 +10,8 @@ import javax.swing.BorderFactory;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
+import wackyTracky.clientbindings.java.WtRequest.ConnException;
+import wackyTracky.clientbindings.java.model.Item;
 import wackyTracky.clientbindings.java.model.ItemList;
 
 public class ComponentItemInputter extends JPanel {
@@ -41,7 +43,12 @@ public class ComponentItemInputter extends JPanel {
 		this.txtField.setText("");
 
 		try {
+			Item i = new Item(content);
+			this.itemList.add(i);
+
 			Main.session.reqCreateItem(this.itemList, content);
+		} catch (ConnException e) {
+			return;
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

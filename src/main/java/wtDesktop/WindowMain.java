@@ -24,7 +24,7 @@ public class WindowMain extends JFrame {
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		this.setIconImage(Main.getIcon());
 
-		this.setJMenuBar(new MainMenuBar(this));
+		this.setJMenuBar(new MainMenuBar());
 
 		GridBagConstraints gbc = new GridBagConstraints();
 		gbc.fill = GridBagConstraints.BOTH;

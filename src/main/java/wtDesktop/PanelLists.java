@@ -13,7 +13,6 @@ import javax.swing.ScrollPaneConstants;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
-import wackyTracky.clientbindings.java.model.DataStore;
 import wackyTracky.clientbindings.java.model.ItemList;
 import wackyTracky.clientbindings.java.model.ListOfLists;
 
@@ -23,12 +22,12 @@ public class PanelLists extends JPanel implements ListOfLists.Listener {
 
 		@Override
 		public ItemList getElementAt(int arg0) {
-			return DataStore.instance.listOfLists.getLists().get(arg0);
+			return Main.datastore.listOfLists.getLists().get(arg0);
 		}
 
 		@Override
 		public int getSize() {
-			return DataStore.instance.listOfLists.getLists().size();
+			return Main.datastore.listOfLists.getLists().size();
 		}
 
 	}
@@ -69,7 +68,7 @@ public class PanelLists extends JPanel implements ListOfLists.Listener {
 		this.itemList.setCellRenderer(new ComponentListSidebarButton());
 		this.itemList.addListSelectionListener(new ItemListSelectionListener());
 
-		DataStore.instance.listOfLists.listeners.add(this);
+		Main.datastore.listOfLists.listeners.add(this);
 
 		this.setLayout(new GridBagLayout());
 		GridBagConstraints gbc = new GridBagConstraints();
@@ -100,5 +99,12 @@ public class PanelLists extends JPanel implements ListOfLists.Listener {
 		} else {
 			return this.itemList.getModel().getElementAt(this.itemList.getSelectedIndex());
 		}
+	}
+
+	@Override
+	public void onListRemoved(ItemList list) {
+		this.mdl.fireChanged();
+		this.itemList.invalidate();
+		this.itemList.doLayout();
 	}
 }

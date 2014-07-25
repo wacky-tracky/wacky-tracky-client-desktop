@@ -14,6 +14,7 @@ import javax.swing.JPopupMenu;
 import javax.swing.ListCellRenderer;
 
 import wackyTracky.clientbindings.java.model.ItemList;
+import wackyTracky.clientbindings.java.model.PendingAction;
 
 class ComponentListSidebarButton implements ListCellRenderer<ItemList> {
 
@@ -35,9 +36,10 @@ class ComponentListSidebarButton implements ListCellRenderer<ItemList> {
 
 	@Override
 	public Component getListCellRendererComponent(final JList<? extends ItemList> list, final ItemList value, int index, boolean isSelected, boolean cellHasFocus) {
-		final JLabel l = new JLabel() {
+		final JLabel lbl = new JLabel() {
 			@Override
 			public void paint(Graphics g) {
+
 				super.paint(g);
 
 				g.setColor(Color.GRAY);
@@ -45,26 +47,35 @@ class ComponentListSidebarButton implements ListCellRenderer<ItemList> {
 			}
 		};
 
-		if (value.existsOnServer) {
-			l.setBackground(Color.WHITE);
+		if (value.pendingAction == PendingAction.NONE) {
+			lbl.setBackground(Color.WHITE);
 		} else {
-			l.setBackground(Color.PINK);
+			lbl.setBackground(Stylesheet.LIST_UNSELECTED_PENDING_BG);
 		}
 
-		l.setForeground(Color.BLACK);
-		l.setOpaque(true);
-		l.setBorder(BorderFactory.createEmptyBorder(6, 6, 6, 6));
-		l.setText(value.title);
+		lbl.setForeground(Color.BLACK);
+		lbl.setOpaque(true);
+		lbl.setBorder(BorderFactory.createEmptyBorder(6, 6, 6, 6));
+		lbl.setText(value.title);
 
 		if (value.getItemCount() > 0) {
-			l.setText(l.getText() + " (" + value.getItemCount() + ")");
+			lbl.setText(lbl.getText() + " (" + value.getItemCount() + ")");
+		}
+
+		if (value.pendingAction != null) {
+			lbl.setText(lbl.getText() + " (" + value.pendingAction + ")");
 		}
 
 		if (isSelected) {
-			l.setBackground(Stylesheet.LIST_SELECTED_BG);
-			l.setForeground(Stylesheet.LIST_SELECTED_FG);
+			if (lbl.getBackground().equals(Color.WHITE)) {
+				lbl.setBackground(Stylesheet.LIST_SELECTED_BG);
+				lbl.setForeground(Stylesheet.LIST_SELECTED_FG);
+			} else {
+				lbl.setBackground(lbl.getBackground().darker());
+				lbl.setForeground(Color.WHITE);
+			}
 		}
 
-		return l;
+		return lbl;
 	}
 }

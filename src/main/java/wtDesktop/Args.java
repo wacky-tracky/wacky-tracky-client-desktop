@@ -11,6 +11,9 @@ public class Args {
 	@Parameter(names = "--password")
 	public static String password;
 
+	@Parameter(names = "--offline")
+	public static boolean offline;
+
 	public static boolean hasUsernameAndPassword() {
 		return (Args.username != null) && (Args.password != null);
 	}
