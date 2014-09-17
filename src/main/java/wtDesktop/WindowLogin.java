@@ -12,6 +12,7 @@ import java.awt.event.KeyEvent;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 
@@ -70,7 +71,11 @@ public class WindowLogin extends JFrame {
 		} catch (ConnException e) {
 			if (e.isOneOf(ConnError.UNKNOWN_HOST_DNS, ConnError.REQ_WHILE_OFFLINE)) {
 				WtConnMonitor.goOffline();
+			} else if (e.isOneOf(ConnError.USER_NOT_FOUND)) {
+				JOptionPane.showMessageDialog(null, "user not found");
+				return;
 			} else {
+				e.printStackTrace();
 				this.resetLogin();
 				return;
 			}
