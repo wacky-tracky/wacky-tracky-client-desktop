@@ -12,7 +12,7 @@ import wackyTracky.clientbindings.java.WtConnMonitor;
 
 public class WindowMain extends JFrame {
 	public static WindowMain instance = new WindowMain();
-	public PanelItems panelItems;
+	public ComponentPanelItems panelItems;
 	public PanelLists panelLists;
 
 	private final ComponentStatusBar compStatusBar = new ComponentStatusBar(this);
@@ -49,7 +49,7 @@ public class WindowMain extends JFrame {
 		ComponentGlobalControls gloControls = new ComponentGlobalControls();
 		panelSidebar.add(gloControls, gbc);
 
-		this.panelItems = new PanelItems();
+		this.panelItems = new ComponentPanelItems();
 		this.panelLists.listeners.add(this.panelItems);
 
 		JSplitPane sp = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);

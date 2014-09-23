@@ -19,7 +19,6 @@ import wackyTracky.clientbindings.java.model.ListOfLists;
 public class PanelLists extends JPanel implements ListOfLists.Listener {
 
 	private class ItemListModel extends AbstractWtListModel<ItemList> {
-
 		@Override
 		public ItemList getElementAt(int arg0) {
 			return Main.datastore.listOfLists.getLists().get(arg0);
@@ -29,7 +28,6 @@ public class PanelLists extends JPanel implements ListOfLists.Listener {
 		public int getSize() {
 			return Main.datastore.listOfLists.getLists().size();
 		}
-
 	}
 
 	private class ItemListSelectionListener implements ListSelectionListener {
@@ -46,7 +44,7 @@ public class PanelLists extends JPanel implements ListOfLists.Listener {
 				WindowMain.instance.panelItems.setList(list);
 
 				for (Listener l : PanelLists.this.listeners) {
-					l.listClicked(list);
+					l.onListClicked(list);
 				}
 			}
 		}
@@ -54,7 +52,7 @@ public class PanelLists extends JPanel implements ListOfLists.Listener {
 	}
 
 	public interface Listener {
-		void listClicked(ItemList newList);
+		void onListClicked(ItemList newList);
 	}
 
 	public final Vector<Listener> listeners = new Vector<Listener>();

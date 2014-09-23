@@ -6,15 +6,17 @@ import java.awt.Graphics;
 
 import javax.swing.BorderFactory;
 import javax.swing.JLabel;
-import javax.swing.JList;
-import javax.swing.ListCellRenderer;
+import javax.swing.JTree;
+import javax.swing.tree.TreeCellRenderer;
 
 import wackyTracky.clientbindings.java.model.Item;
 import wackyTracky.clientbindings.java.model.PendingAction;
 
-class ComponentItemCellRenderer implements ListCellRenderer<Item> {
+class ComponentItemCellRenderer implements TreeCellRenderer {
+
 	@Override
-	public Component getListCellRendererComponent(JList<? extends Item> list, Item item, int index, boolean isSelected, boolean cellHasFocus) {
+	public Component getTreeCellRendererComponent(JTree tree, Object value, boolean isSelected, boolean expanded, boolean leaf, int row, boolean hasFocus) {
+		Item item = (Item) value;
 		JLabel lbl = new JLabel() {
 			@Override
 			public void paint(Graphics g) {
@@ -42,6 +44,14 @@ class ComponentItemCellRenderer implements ListCellRenderer<Item> {
 				lbl.setBackground(lbl.getBackground().darker());
 				lbl.setForeground(Color.WHITE);
 			}
+		}
+
+		if (!item.container.hasItems()) {
+			lbl.setText("[ ] " + lbl.getText());
+		} else if (expanded) {
+			lbl.setText("[-] " + lbl.getText());
+		} else {
+			lbl.setText("[+] " + lbl.getText());
 		}
 
 		return lbl;

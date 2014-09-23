@@ -58,8 +58,8 @@ class ComponentListSidebarButton implements ListCellRenderer<ItemList> {
 		lbl.setBorder(BorderFactory.createEmptyBorder(6, 6, 6, 6));
 		lbl.setText(value.title);
 
-		if (value.getItemCount() > 0) {
-			lbl.setText(lbl.getText() + " (" + value.getItemCount() + ")");
+		if (value.container.getItemCount() > 0) {
+			lbl.setText(lbl.getText() + " (" + value.container.getItemCount() + ")");
 		}
 
 		if (value.pendingAction != null) {

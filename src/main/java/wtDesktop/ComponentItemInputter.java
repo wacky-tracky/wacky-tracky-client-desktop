@@ -44,7 +44,7 @@ public class ComponentItemInputter extends JPanel {
 
 		try {
 			Item i = new Item(content);
-			this.itemList.add(i);
+			this.itemList.container.addItem(i);
 
 			Main.session.reqCreateItem(this.itemList, content);
 		} catch (ConnException e) {
