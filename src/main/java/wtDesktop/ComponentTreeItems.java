@@ -131,12 +131,11 @@ public class ComponentTreeItems extends JTree implements Listener {
 	private final WideTreeUi wtui = new WideTreeUi();
 
 	public ComponentTreeItems() {
-
+		setToggleClickCount(1);
 		this.setModel(new Modelo());
 		this.setCellRenderer(new ComponentItemCellRenderer());
 		this.addTreeSelectionListener(new Tsl());
 		this.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
-
 	}
 
 	public Item getselectedItem() {

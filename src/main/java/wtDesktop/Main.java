@@ -5,11 +5,12 @@ import groovy.lang.GroovyClassLoader;
 
 import java.awt.Image;
 import java.io.File;
+import java.io.InputStream;
+import java.net.URL;
 
 import javax.imageio.ImageIO;
 import javax.swing.UIManager;
 
-import jwrCommonsJava.JarUtil;
 import wackyTracky.clientbindings.java.WtConnMonitor;
 import wackyTracky.clientbindings.java.WtResponse;
 import wackyTracky.clientbindings.java.api.Session;
@@ -48,14 +49,22 @@ class Main {
 		Main.datastore.save();
 		System.exit(0);
 	}
+	
+	private static boolean isInJar(Class<?> c) {
+		return c.getClassLoader().toString().startsWith("jar");
+	}
+	
+	private static URL getResource(String path) {
+		return Main.class.getResource(path); 
+	} 
 
 	public static Image getIcon() {
-		String path = "logo.png";
+		String path = "logo.png"; 
 
 		if (Main.icon == null) {
 			try {
-				if (JarUtil.isInAJar(Main.class)) {
-					Main.icon = ImageIO.read(JarUtil.getResource(path));
+				if (isInJar(Main.class)) {
+					Main.icon = ImageIO.read(getResource(path));
 				} else {
 					File f = new File("src/main/resources/" + path);
 					Main.icon = ImageIO.read(f);
@@ -69,7 +78,7 @@ class Main {
 	}
 
 	public static String getVersion() {
-		if (JarUtil.isInAJar(Main.class)) {
+		if (isInJar(Main.class)) {
 			return Main.class.getPackage().getImplementationVersion();
 		} else {
 			return "nojar";

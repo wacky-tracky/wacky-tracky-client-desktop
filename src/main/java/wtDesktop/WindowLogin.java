@@ -1,5 +1,6 @@
 package wtDesktop;
 
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -58,10 +59,19 @@ public class WindowLogin extends JFrame {
 			}
 		});
 	}
+	
+	private void disableLogin() {
+		txtUsername.setBackground(Color.GRAY);
+		txtPassword.setBackground(Color.GRAY); 
+		
+		txtUsername.setEnabled(false);
+		txtPassword.setEnabled(false);
+		this.btnLogin.setEnabled(false);
+	}
 
 	public void clickLogin() {
 		try {
-			this.btnLogin.setEnabled(false);
+			disableLogin();
 
 			WtRequest req = Main.session.reqAuthenticate(this.txtUsername.getText(), new String(this.txtPassword.getPassword()));
 			req.response().assertStatusOkAndJson();
@@ -91,6 +101,11 @@ public class WindowLogin extends JFrame {
 
 	private void resetLogin() {
 		this.btnLogin.setEnabled(true);
+		this.txtUsername.setEnabled(true);
+		this.txtPassword.setEnabled(true);
+		
+		txtUsername.setBackground(Color.WHITE);
+		txtPassword.setBackground(Color.WHITE);
 	}
 
 	public void setupComponents() {
