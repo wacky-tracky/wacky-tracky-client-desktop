@@ -13,10 +13,37 @@
           <target>1.7</target>
         </configuration> 
       </plugin>
+	  <plugin>
+	  	<groupId>org.apache.maven.plugins</groupId>
+		<artifactId>maven-jar-plugin</artifactId>
+		<configuration>
+			<archive>
+				<manifest>
+					<mainClass>wtDesktop.Main</mainClass>
+				</manifest>
+			</archive>
+		</configuration>
+	  </plugin>
+	  <plugin>
+	  	<groupId>org.apache.maven.plugins</groupId>
+		<artifactId>maven-shade-plugin</artifactId>
+		<version>1.6</version>
+		<executions>
+			<execution>
+				<phase>package</phase>
+				<goals>
+					<goal>shade</goal>
+				</goals>
+				<configuration>
+					<finalName>wtDesktop-${version}</finalName>
+				</configuration>
+			</execution>
+		</executions>
+	  </plugin>
     </plugins>
   </build>
   <dependencies>
-   <dependency>                                                            
+   <dependency>                                                             
       <groupId>com.beust</groupId>                                        
       <artifactId>jcommander</artifactId>                                 
       <version>1.30</version>                                             

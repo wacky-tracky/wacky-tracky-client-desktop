@@ -83,6 +83,11 @@ public class WindowLogin extends JFrame {
 				WtConnMonitor.goOffline();
 			} else if (e.isOneOf(ConnError.USER_NOT_FOUND)) {
 				JOptionPane.showMessageDialog(null, "user not found");
+				this.resetLogin();
+				return;
+			} else if (e.isOneOf(ConnError.USER_WRONG_PASSWORD)) {
+				JOptionPane.showMessageDialog(null, "Your password is incorrect.");
+				this.resetLogin();
 				return;
 			} else {
 				e.printStackTrace();

@@ -17,11 +17,14 @@ import wackyTracky.clientbindings.java.api.Session;
 import wackyTracky.clientbindings.java.api.SyncManager;
 import wackyTracky.clientbindings.java.model.DataStore;
 
+import wtDesktop.ConfigurationFileManager;
+
 import com.beust.jcommander.JCommander;
 
 class Main {
 	public static Session session = new Session();
 	public static String username;
+	public static final ConfigurationFileManager configFileManager = new ConfigurationFileManager();
 
 	public static final DataStore datastore = DataStore.load();
 
@@ -33,6 +36,8 @@ class Main {
 		}
 
 		WtResponse.userAgent = "wtDesktop " + Main.getVersion();
+
+		configFileManager.load();
 
 		syncManager = new SyncManager(datastore, session);
 	}
