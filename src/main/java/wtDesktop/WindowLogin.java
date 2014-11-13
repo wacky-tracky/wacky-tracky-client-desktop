@@ -21,10 +21,12 @@ import wackyTracky.clientbindings.java.WtConnMonitor;
 import wackyTracky.clientbindings.java.WtRequest;
 import wackyTracky.clientbindings.java.WtRequest.ConnError;
 import wackyTracky.clientbindings.java.WtRequest.ConnException;
+import wackyTracky.clientbindings.java.WtCallbackHandler;
 
 public class WindowLogin extends JFrame {
 	public JTextField txtUsername = new JTextField();
 	public JPasswordField txtPassword = new JPasswordField();
+
 	public JButton btnLogin = new JButton("Login");
 
 	public WindowLogin() {
@@ -59,25 +61,38 @@ public class WindowLogin extends JFrame {
 			}
 		});
 	}
-	
-	private void disableLogin() {
-		txtUsername.setBackground(Color.GRAY);
-		txtPassword.setBackground(Color.GRAY); 
-		
-		txtUsername.setEnabled(false);
-		txtPassword.setEnabled(false);
-		this.btnLogin.setEnabled(false);
+
+	public void onLoginSuccess() {
+
+	}
+
+	public void onLoginException() {
+
 	}
 
 	public void clickLogin() {
 		try {
-			disableLogin();
+			this.disableLogin();
 
-			WtRequest req = Main.session.reqAuthenticate(this.txtUsername.getText(), new String(this.txtPassword.getPassword()));
-			req.response().assertStatusOkAndJson();
-			req.response().saveCookiesInSession();
+			final WtRequest req = Main.session.reqAuthenticate(this.txtUsername.getText(), new String(this.txtPassword.getPassword()));
+			req.handle(new WtCallbackHandler() {
+				public void submit() {
+					req.response().assertStatusOkAndJson();
+					req.response().saveCookiesInSession();
 
-			Main.username = req.response().getContentJsonObject().get("username").toString();
+					Main.username = req.response().getContentJsonObject().get("username").toString();
+				}
+
+				public void onSuccess() {
+					onLoginSuccess();
+				}
+
+				public void onException() {
+					onLoginException();
+				}
+			});
+
+
 		} catch (ConnException e) {
 			if (e.isOneOf(ConnError.UNKNOWN_HOST_DNS, ConnError.REQ_WHILE_OFFLINE)) {
 				WtConnMonitor.goOffline();
@@ -104,13 +119,22 @@ public class WindowLogin extends JFrame {
 		WindowMain.instance.onLoggedIn();
 	}
 
+	private void disableLogin() {
+		this.txtUsername.setBackground(Color.GRAY);
+		this.txtPassword.setBackground(Color.GRAY);
+
+		this.txtUsername.setEnabled(false);
+		this.txtPassword.setEnabled(false);
+		this.btnLogin.setEnabled(false);
+	}
+
 	private void resetLogin() {
 		this.btnLogin.setEnabled(true);
 		this.txtUsername.setEnabled(true);
 		this.txtPassword.setEnabled(true);
-		
-		txtUsername.setBackground(Color.WHITE);
-		txtPassword.setBackground(Color.WHITE);
+
+		this.txtUsername.setBackground(Color.WHITE);
+		this.txtPassword.setBackground(Color.WHITE);
 	}
 
 	public void setupComponents() {
