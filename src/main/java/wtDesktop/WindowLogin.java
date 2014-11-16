@@ -59,19 +59,10 @@ public class WindowLogin extends JFrame {
 			}
 		});
 	}
-	
-	private void disableLogin() {
-		txtUsername.setBackground(Color.GRAY);
-		txtPassword.setBackground(Color.GRAY); 
-		
-		txtUsername.setEnabled(false);
-		txtPassword.setEnabled(false);
-		this.btnLogin.setEnabled(false);
-	}
 
 	public void clickLogin() {
 		try {
-			disableLogin();
+			this.disableLogin();
 
 			WtRequest req = Main.session.reqAuthenticate(this.txtUsername.getText(), new String(this.txtPassword.getPassword()));
 			req.response().assertStatusOkAndJson();
@@ -104,13 +95,28 @@ public class WindowLogin extends JFrame {
 		WindowMain.instance.onLoggedIn();
 	}
 
+	private void disableLogin() {
+		this.txtUsername.setBackground(Color.GRAY);
+		this.txtPassword.setBackground(Color.GRAY);
+
+		this.txtUsername.setEnabled(false);
+		this.txtPassword.setEnabled(false);
+		this.btnLogin.setEnabled(false);
+
+		try {
+			Thread.sleep(5000);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+	}
+
 	private void resetLogin() {
 		this.btnLogin.setEnabled(true);
 		this.txtUsername.setEnabled(true);
 		this.txtPassword.setEnabled(true);
-		
-		txtUsername.setBackground(Color.WHITE);
-		txtPassword.setBackground(Color.WHITE);
+
+		this.txtUsername.setBackground(Color.WHITE);
+		this.txtPassword.setBackground(Color.WHITE);
 	}
 
 	public void setupComponents() {
