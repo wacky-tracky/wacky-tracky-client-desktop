@@ -9,23 +9,13 @@ import javax.swing.JPanel;
 
 import wackyTracky.clientbindings.java.api.SyncManager;
 
-public class ComponentGlobalControls extends JPanel {
+public class ComponentGlobalActions extends JPanel {
 	private final JButton btnSync = new JButton("sync");
 	private final JButton btnNewList = new JButton("n");
 	private final JButton btnRefresh = new JButton("*");
-	private final JButton btnDel = new JButton("rm");
 
-	public ComponentGlobalControls() {
+	public ComponentGlobalActions() {
 		this.setLayout(new FlowLayout());
-
-		this.btnDel.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				Actioner.deleteSelectedList();
-			}
-		});
-
-		this.add(this.btnDel);
 
 		this.btnRefresh.addActionListener(new ActionListener() {
 			@Override

@@ -13,5 +13,6 @@ public class ComponentLogo extends JLabel {
 		this.setFont(this.getFont().deriveFont(16f));
 		this.setOpaque(true);
 		this.setBorder(BorderFactory.createEmptyBorder(12, 12, 12, 12));
+		this.setToolTipText("Version: " + Main.getVersion());
 	}
 }

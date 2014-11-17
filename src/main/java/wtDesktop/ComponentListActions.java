@@ -5,19 +5,22 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import javax.swing.JButton;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 import wackyTracky.clientbindings.java.model.ItemList;
 
-public class ComponentListOptions extends JPanel {
+public class ComponentListActions extends JPanel {
 	private final JButton btnRename = new JButton("rename");
 	private final JButton btnDelete = new JButton("delete");
 	private final JButton btnInfo = new JButton("info");
 
 	private ItemList list;
 
-	public ComponentListOptions() {
+	public ComponentListActions() {
 		this.setLayout(new FlowLayout());
+		this.add(new JLabel("List actions:"));
+
 		this.btnRename.setEnabled(false);
 		this.btnRename.addActionListener(new ActionListener() {
 			@Override
@@ -36,7 +39,7 @@ public class ComponentListOptions extends JPanel {
 
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				new WindowListInfo(ComponentListOptions.this.list);
+				new WindowListInfo(ComponentListActions.this.list);
 			}
 		});
 

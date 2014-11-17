@@ -17,11 +17,13 @@ import javax.swing.JOptionPane;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 
+import wackyTracky.clientbindings.java.WtCallbackHandler;
 import wackyTracky.clientbindings.java.WtConnMonitor;
 import wackyTracky.clientbindings.java.WtRequest;
 import wackyTracky.clientbindings.java.WtRequest.ConnError;
 import wackyTracky.clientbindings.java.WtRequest.ConnException;
-import wackyTracky.clientbindings.java.WtCallbackHandler;
+
+import com.google.gson.JsonObject;
 
 public class WindowLogin extends JFrame {
 	public JTextField txtUsername = new JTextField();
@@ -62,61 +64,33 @@ public class WindowLogin extends JFrame {
 		});
 	}
 
-	public void onLoginSuccess() {
-
-	}
-
-	public void onLoginException() {
-
-	}
-
 	public void clickLogin() {
-		try {
-			this.disableLogin();
+		this.disableLogin();
 
-			final WtRequest req = Main.session.reqAuthenticate(this.txtUsername.getText(), new String(this.txtPassword.getPassword()));
-			req.handle(new WtCallbackHandler() {
-				public void submit() {
-					req.response().assertStatusOkAndJson();
-					req.response().saveCookiesInSession();
-
-					Main.username = req.response().getContentJsonObject().get("username").toString();
-				}
-
-				public void onSuccess() {
-					onLoginSuccess();
-				}
-
-				public void onException() {
-					onLoginException();
-				}
-			});
-
-
-		} catch (ConnException e) {
-			if (e.isOneOf(ConnError.UNKNOWN_HOST_DNS, ConnError.REQ_WHILE_OFFLINE)) {
-				WtConnMonitor.goOffline();
-			} else if (e.isOneOf(ConnError.USER_NOT_FOUND)) {
-				JOptionPane.showMessageDialog(null, "user not found");
-				this.resetLogin();
-				return;
-			} else if (e.isOneOf(ConnError.USER_WRONG_PASSWORD)) {
-				JOptionPane.showMessageDialog(null, "Your password is incorrect.");
-				this.resetLogin();
-				return;
-			} else {
-				e.printStackTrace();
-				this.resetLogin();
-				return;
+		final WtRequest req = Main.session.reqAuthenticate(this.txtUsername.getText(), new String(this.txtPassword.getPassword()));
+		req.handle(new WtCallbackHandler() {
+			@Override
+			public void onException(ConnException connException) {
+				WindowLogin.this.onLoginException(connException);
 			}
-		} catch (Exception e) {
-			e.printStackTrace();
-			this.resetLogin();
-			return;
-		}
 
-		this.setVisible(false);
-		WindowMain.instance.onLoggedIn();
+			@Override
+			public void onSuccess() {
+				JsonObject authObj = this.request.response().getContentJsonObject();
+				System.out.println(authObj);
+
+				Main.configFileManager.configuration.lastSessionId = authObj.get("id").toString();
+				String username = authObj.get("username").toString();
+
+				WindowLogin.this.onLoginSuccess(username);
+			}
+
+			@Override
+			public void submit() throws ConnException {
+				req.response().assertStatusOkAndJson();
+				req.response().saveCookiesInSession();
+			}
+		});
 	}
 
 	private void disableLogin() {
@@ -126,6 +100,34 @@ public class WindowLogin extends JFrame {
 		this.txtUsername.setEnabled(false);
 		this.txtPassword.setEnabled(false);
 		this.btnLogin.setEnabled(false);
+	}
+
+	public void onLoginException(ConnException e) {
+		if (e.isOneOf(ConnError.UNKNOWN_HOST_DNS, ConnError.REQ_WHILE_OFFLINE)) {
+			WtConnMonitor.goOffline();
+		} else if (e.isOneOf(ConnError.USER_NOT_FOUND)) {
+			JOptionPane.showMessageDialog(null, "user not found", "Login failure", JOptionPane.ERROR_MESSAGE);
+			this.resetLogin();
+			return;
+		} else if (e.isOneOf(ConnError.USER_WRONG_PASSWORD)) {
+			JOptionPane.showMessageDialog(null, "Your password is incorrect.", "Login failure", JOptionPane.ERROR_MESSAGE);
+			this.requestFocus();
+			this.txtPassword.requestFocus();
+
+			this.resetLogin();
+			return;
+		} else {
+			e.printStackTrace();
+			this.resetLogin();
+			return;
+		}
+	}
+
+	public void onLoginSuccess(String username) {
+		Main.username = username;
+
+		this.setVisible(false);
+		WindowMain.instance.onLoggedIn();
 	}
 
 	private void resetLogin() {
@@ -162,7 +164,14 @@ public class WindowLogin extends JFrame {
 
 		gbc.weighty = 1;
 		gbc.gridx++;
+
 		this.add(this.txtPassword, gbc);
+
+		JLabel lblVersion = new JLabel("Version: " + Main.getVersion());
+		gbc.gridy++;
+		gbc.gridx = 0;
+		lblVersion.setEnabled(false);
+		this.add(lblVersion, gbc);
 
 		this.btnLogin.addActionListener(new ActionListener() {
 
@@ -173,10 +182,9 @@ public class WindowLogin extends JFrame {
 		});
 
 		gbc.gridwidth = GridBagConstraints.REMAINDER;
-		gbc.gridx = 0;
+		gbc.gridx++;
 		gbc.fill = GridBagConstraints.VERTICAL;
-		gbc.anchor = GridBagConstraints.CENTER;
-		gbc.gridy++;
+		gbc.anchor = GridBagConstraints.SOUTHEAST;
 		this.add(this.btnLogin, gbc);
 	}
 }

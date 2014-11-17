@@ -2,25 +2,28 @@ package wtDesktop;
 
 import java.io.File;
 import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
 
 import com.google.gson.Gson;
 
 class ConfigurationFileManager {
-	private File configFile;
-
-	private static class Configuration {
+	static class Configuration {
+		String lastSessionId;
 	}
 
-	private Configuration configuration;
+	private File configFile;
+
+	public Configuration configuration = new Configuration();
 
 	public void load() {
-		setupConfigFile();
+		this.setupConfigFile();
 
 		FileReader reader;
 
 		try {
-			reader = new FileReader(configFile);
-			configuration = new Gson().fromJson(reader, Configuration.class);
+			reader = new FileReader(this.configFile);
+			this.configuration = new Gson().fromJson(reader, Configuration.class);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -28,16 +31,30 @@ class ConfigurationFileManager {
 		return;
 	}
 
+	public void save() {
+		String json = new Gson().toJson(this.configuration);
+
+		FileWriter fw;
+		try {
+			fw = new FileWriter(this.configFile);
+			fw.write(json);
+			fw.close();
+
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
 	public void setupConfigFile() {
 		File homedir = new File(System.getProperty("user.home"));
 		File wtDir = new File(homedir, ".wt");
 		wtDir.mkdir();
 
-		configFile = new File(wtDir, "config.json");
-		
-		if (!configFile.exists()) {
+		this.configFile = new File(wtDir, "config.json");
+
+		if (!this.configFile.exists()) {
 			try {
-				configFile.createNewFile();
+				this.configFile.createNewFile();
 			} catch (Exception e) {
 				e.printStackTrace();
 			}

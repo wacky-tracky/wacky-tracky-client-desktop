@@ -26,14 +26,16 @@ class ComponentItemCellRenderer implements TreeCellRenderer {
 				g.drawLine(0, this.getHeight() - 1, this.getWidth(), this.getHeight() - 1);
 			}
 		};
-		lbl.setText(item.content + " (" + item.pendingAction + ")");
+
 		lbl.setOpaque(true);
 		lbl.setBorder(BorderFactory.createEmptyBorder(6, 6, 6, 6));
+		lbl.setText(item.content);
 
 		if (item.pendingAction == PendingAction.NONE) {
 			lbl.setBackground(Stylesheet.LIST_UNSELECTED_BG);
 		} else {
 			lbl.setBackground(Stylesheet.ITEM_UNSELECTED_PENDING_BG);
+			lbl.setText(lbl.getText() + " (" + item.pendingAction + ")");
 		}
 
 		if (isSelected) {

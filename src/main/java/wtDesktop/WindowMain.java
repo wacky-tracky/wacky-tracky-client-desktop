@@ -46,7 +46,7 @@ public class WindowMain extends JFrame {
 
 		gbc.gridy++;
 		gbc.weighty = 0;
-		ComponentGlobalControls gloControls = new ComponentGlobalControls();
+		ComponentGlobalActions gloControls = new ComponentGlobalActions();
 		panelSidebar.add(gloControls, gbc);
 
 		this.panelItems = new ComponentPanelItems();

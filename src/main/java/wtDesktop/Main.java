@@ -5,7 +5,6 @@ import groovy.lang.GroovyClassLoader;
 
 import java.awt.Image;
 import java.io.File;
-import java.io.InputStream;
 import java.net.URL;
 
 import javax.imageio.ImageIO;
@@ -16,8 +15,6 @@ import wackyTracky.clientbindings.java.WtResponse;
 import wackyTracky.clientbindings.java.api.Session;
 import wackyTracky.clientbindings.java.api.SyncManager;
 import wackyTracky.clientbindings.java.model.DataStore;
-
-import wtDesktop.ConfigurationFileManager;
 
 import com.beust.jcommander.JCommander;
 
@@ -52,19 +49,12 @@ class Main {
 
 	public static void exit() {
 		Main.datastore.save();
+		configFileManager.save();
 		System.exit(0);
 	}
-	
-	private static boolean isInJar(Class<?> c) {
-		return c.getClassLoader().toString().startsWith("jar");
-	}
-	
-	private static URL getResource(String path) {
-		return Main.class.getResource(path); 
-	} 
 
 	public static Image getIcon() {
-		String path = "logo.png"; 
+		String path = "logo.png";
 
 		if (Main.icon == null) {
 			try {
@@ -82,12 +72,20 @@ class Main {
 		return Main.icon;
 	}
 
+	private static URL getResource(String path) {
+		return Main.class.getResource(path);
+	}
+
 	public static String getVersion() {
 		if (isInJar(Main.class)) {
 			return Main.class.getPackage().getImplementationVersion();
 		} else {
 			return "nojar";
 		}
+	}
+
+	private static boolean isInJar(Class<?> c) {
+		return c.getClassLoader().toString().startsWith("jar");
 	}
 
 	public static void main(String[] sysargs) throws Exception {

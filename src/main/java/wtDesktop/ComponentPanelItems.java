@@ -10,6 +10,8 @@ import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JScrollPane;
 import javax.swing.ScrollPaneConstants;
+import javax.swing.event.TreeSelectionEvent;
+import javax.swing.event.TreeSelectionListener;
 
 import wackyTracky.clientbindings.java.model.Item;
 import wackyTracky.clientbindings.java.model.ItemContainer;
@@ -19,7 +21,8 @@ public class ComponentPanelItems extends JList<String> implements ItemContainer.
 
 	private final JLabel lblDesc = new JLabel("...");
 
-	private final ComponentListOptions panListOptions = new ComponentListOptions();
+	private final ComponentListActions panListOptions = new ComponentListActions();
+	private final ComponentItemActions panItemActions = new ComponentItemActions();
 	private final ComponentItemInputter itemInputter = new ComponentItemInputter();
 
 	private final ComponentTreeItems jtree = new ComponentTreeItems();
@@ -39,6 +42,7 @@ public class ComponentPanelItems extends JList<String> implements ItemContainer.
 		GridBagConstraints gbc = Util.getNewGbc();
 
 		gbc.weighty = 0;
+		gbc.gridwidth = GridBagConstraints.REMAINDER;
 		this.add(this.itemInputter, gbc);
 
 		gbc.gridy++;
@@ -54,8 +58,21 @@ public class ComponentPanelItems extends JList<String> implements ItemContainer.
 		this.lblDesc.setBorder(BorderFactory.createEmptyBorder(6, 6, 6, 6));
 		this.add(this.lblDesc, gbc);
 
+		gbc.gridwidth = 1;
 		gbc.gridy++;
+		gbc.anchor = GridBagConstraints.SOUTHWEST;
 		this.add(this.panListOptions, gbc);
+
+		gbc.gridx++;
+		gbc.anchor = GridBagConstraints.SOUTHEAST;
+		this.jtree.addTreeSelectionListener(new TreeSelectionListener() {
+
+			@Override
+			public void valueChanged(TreeSelectionEvent arg0) {
+				ComponentPanelItems.this.panItemActions.onItemChanged(ComponentPanelItems.this.jtree.getselectedItem());
+			}
+		});
+		this.add(this.panItemActions, gbc);
 
 		this.setBackground(this.panListOptions.getBackground());
 	}
