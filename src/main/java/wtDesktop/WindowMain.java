@@ -16,12 +16,17 @@ public class WindowMain extends JFrame {
 	public PanelLists panelLists;
 
 	private final ComponentStatusBar compStatusBar = new ComponentStatusBar(this);
+	
+	@Override
+	public void dispose() {
+		Main.exit(); 
+	}
 
 	private WindowMain() {
 		this.setBounds(100, 100, 960, 480);
 		this.setLocationRelativeTo(null);
 		this.setTitle("wacky-tracky");
-		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		this.setIconImage(Main.getIcon());
 
 		this.setJMenuBar(new MainMenuBar());

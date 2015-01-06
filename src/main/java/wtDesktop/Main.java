@@ -48,7 +48,7 @@ class Main {
 	public static String password;
 
 	public static void exit() {
-		Main.datastore.save();
+		Main.datastore.save(); 
 		configFileManager.save();
 		System.exit(0);
 	}

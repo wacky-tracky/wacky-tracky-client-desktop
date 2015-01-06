@@ -5,11 +5,14 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 
+import javax.swing.JOptionPane;
+
 import com.google.gson.Gson;
 
 class ConfigurationFileManager {
 	static class Configuration {
-		String lastSessionId;
+		public String lastSessionId;
+		public String lastUsername = "username";  
 	}
 
 	private File configFile;
@@ -24,10 +27,17 @@ class ConfigurationFileManager {
 		try {
 			reader = new FileReader(this.configFile);
 			this.configuration = new Gson().fromJson(reader, Configuration.class);
+			
+			if (configuration == null) {
+				throw new IllegalArgumentException("Configuration was null, possibly the config file exists but had empty content.");
+			}
 		} catch (Exception e) {
+			JOptionPane.showMessageDialog(null, "Your configuration file was found, but could not be loaded. \n\nThe most likely reason is that your configuration was corrupt. A new configuration has been setup for you.", "New configuration", JOptionPane.WARNING_MESSAGE);
+			configuration = new Configuration();
+			
 			e.printStackTrace();
 		}
-
+		
 		return;
 	}
 
@@ -55,6 +65,8 @@ class ConfigurationFileManager {
 		if (!this.configFile.exists()) {
 			try {
 				this.configFile.createNewFile();
+				
+				save();
 			} catch (Exception e) {
 				e.printStackTrace();
 			}

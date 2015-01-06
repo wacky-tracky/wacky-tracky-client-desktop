@@ -26,7 +26,7 @@ import wackyTracky.clientbindings.java.WtRequest.ConnException;
 import com.google.gson.JsonObject;
 
 public class WindowLogin extends JFrame {
-	public JTextField txtUsername = new JTextField();
+	public JTextField txtUsername = new JTextField(Main.configFileManager.configuration.lastUsername);
 	public JPasswordField txtPassword = new JPasswordField();
 
 	public JButton btnLogin = new JButton("Login");
@@ -79,8 +79,8 @@ public class WindowLogin extends JFrame {
 				JsonObject authObj = this.request.response().getContentJsonObject();
 				System.out.println(authObj);
 
-				Main.configFileManager.configuration.lastSessionId = authObj.get("id").toString();
-				String username = authObj.get("username").toString();
+				Main.configFileManager.configuration.lastSessionId = authObj.get("id").getAsString();
+				String username = authObj.get("username").getAsString();
 
 				WindowLogin.this.onLoginSuccess(username);
 			}
@@ -124,7 +124,8 @@ public class WindowLogin extends JFrame {
 	}
 
 	public void onLoginSuccess(String username) {
-		Main.username = username;
+		Main.username = username;  
+		Main.configFileManager.configuration.lastUsername = username;
 
 		this.setVisible(false);
 		WindowMain.instance.onLoggedIn();
